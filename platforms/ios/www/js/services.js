@@ -1,50 +1,62 @@
-angular.module('starter.services', [])
+angular.module('app.services', [])
 
-.factory('Chats', function() {
-  // Might use a resource here that returns a JSON array
+.factory('$skygear', [function () {
+    skygear.config({
+        'apiKey': '94a9d05a1b6146c3a7455cb3f146546c',
+        'endPoint': 'https://todo.staging.skygeario.com/'
+    });
+    return skygear;
+}])
 
-  // Some fake testing data
-  var chats = [{
-    id: 0,
-    name: 'Ben Sparrow',
-    lastText: 'You on your way?',
-    face: 'img/ben.png'
-  }, {
-    id: 1,
-    name: 'Max Lynx',
-    lastText: 'Hey, it\'s me',
-    face: 'img/max.png'
-  }, {
-    id: 2,
-    name: 'Adam Bradleyson',
-    lastText: 'I should buy a boat',
-    face: 'img/adam.jpg'
-  }, {
-    id: 3,
-    name: 'Perry Governor',
-    lastText: 'Look at my mukluks!',
-    face: 'img/perry.png'
-  }, {
-    id: 4,
-    name: 'Mike Harrington',
-    lastText: 'This is wicked good ice cream.',
-    face: 'img/mike.png'
-  }];
-
-  return {
-    all: function() {
-      return chats;
-    },
-    remove: function(chat) {
-      chats.splice(chats.indexOf(chat), 1);
-    },
-    get: function(chatId) {
-      for (var i = 0; i < chats.length; i++) {
-        if (chats[i].id === parseInt(chatId)) {
-          return chats[i];
+.service('$items', ['$skygear', function ($skygear) {
+    var that = this;
+    var Item = $skygear.Record.extend('item');
+    this.items = [];
+    this.update = function () {
+        if ($skygear.currentUser) {
+            var query = new $skygear.Query(Item);
+            query.equalTo('_owner_id', $skygear.currentUser.id)
+            query.addDescending('_created_at');
+            return $skygear.publicDB.query(query).then(function (records) {
+                that.items = records;
+                that._onUpdate(records);
+            }, function (err) {
+                console.error(err);
+            });
         }
-      }
-      return null;
+    };
+    this._onUpdate = function () {};
+    this.onUpdate = function (callback) {
+        that._onUpdate = callback;
     }
-  };
-});
+    this.create = function (item) {
+        $skygear.publicDB.save(new Item(item)).then(function (record) {
+            that.items.push(record);
+            that._onUpdate(that.items);
+        }, function (err) {
+            console.error(err);
+        });
+    };
+    this._current = 0;
+    this.markCurrent = function (index) {
+        that._current = index;
+    };
+    this.current = function () {
+        return that.items[that._current];
+    };
+    this.sync = function () {
+        $skygear.publicDB.save(that.current()).then(function () {
+            that._onUpdate(that.items);
+        }, function (err) {
+            console.error(err);
+        });
+    };
+    this.delete = function (index) {
+        $skygear.publicDB.delete(that.items[index]).then(function () {
+            that.items.splice(index, 1);
+            that._onUpdate(that.items);
+        }, function (err) {
+            console.error(err);
+        })
+    };
+}]);

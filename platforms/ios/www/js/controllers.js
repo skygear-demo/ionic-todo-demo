@@ -1,28 +1,118 @@
-angular.module('starter.controllers', [])
+angular.module('app.controllers', [])
+  
+.controller('logInCtrl', ['$scope', '$stateParams', '$skygear', '$ionicPopup', '$state', '$items', 
+function ($scope, $stateParams, $skygear, $ionicPopup, $state, $items) {
 
-.controller('DashCtrl', function($scope) {})
+    $scope.user = {};
+    $scope.login = function () {
+        if ($scope.user.username && $scope.user.password) {
+            $skygear.loginWithUsername($scope.user.username, $scope.user.password).then(function () {
+                $items.update();
+                $state.go('toDoList');
+            }, function (err) {
+                console.error(err);
+                $ionicPopup.alert({
+                    title: 'ERROR ' + err.error.code,
+                    template: err.error.message
+                });
+            });
+        } else {
+            $ionicPopup.alert({
+                title: 'ERROR',
+                template: 'Please fill in all the fields'
+            });
+        }
+    };
 
-.controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
+}])
+   
+.controller('signUpCtrl', ['$scope', '$stateParams', '$skygear', '$ionicPopup', '$state',
+function ($scope, $stateParams, $skygear, $ionicPopup, $state) {
 
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
-})
+    $scope.user = {};
+    $scope.signup = function () {
+        if ($scope.user.username && $scope.user.password) {
+            $skygear.signupWithUsername($scope.user.username, $scope.user.password).then(function () {
+                $state.go('toDoList');
+            }, function (err) {
+                console.error(err);
+                $ionicPopup.alert({
+                    title: 'ERROR ' + err.error.code,
+                    template: err.error.message
+                });
+            });
+        } else {
+            $ionicPopup.alert({
+                title: 'ERROR',
+                template: 'Please fill in all the fields'
+            });            
+        }
+    };
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
+}])
+   
+.controller('toDoListCtrl', ['$scope', '$stateParams', '$skygear', '$state', '$items', '$timeout',
+function ($scope, $stateParams, $skygear, $state, $items, $timeout) {
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
-});
+    $scope.username = $skygear.currentUser.username;
+    $scope.items = $items.items;
+    $scope.logout = function () {
+        $skygear.logout().then(function () {
+            $state.go('logIn');
+        }, function (err) {
+            console.error(err);
+        });
+    };
+    $scope.detail = function (index) {
+        $items.markCurrent(index);
+        $state.go('itemDetail');
+    };
+    $scope.delete = function (index) {
+        $items.delete(index);
+    };
+
+    $items.onUpdate(function (items) {
+        $timeout(function () {
+            $scope.items = items;
+        });
+    });
+
+}])
+   
+.controller('addItemCtrl', ['$scope', '$stateParams', '$items', '$state', '$ionicPopup',
+function ($scope, $stateParams, $items, $state, $ionicPopup) {
+
+    $scope.item = {};
+    $scope.add = function () {
+        if ($scope.item.title) {
+            $items.create($scope.item);
+            $state.go('toDoList');
+        } else {
+            $ionicPopup.alert({
+                'title': 'ERROR',
+                'template': 'Please at least provide a title'
+            })
+        }
+        $state.go('toDoList');
+    }
+
+}])
+   
+.controller('editItemCtrl', ['$scope', '$state', '$items',
+function ($scope, $state, $items) {
+
+    $scope.item = $items.current();
+    $scope.done = function () {
+        $items.sync();
+        $state.go('itemDetail');
+    };
+
+}])
+   
+.controller('itemDetailCtrl', ['$scope', '$state', '$items',
+function ($scope, $state, $items) {
+
+    $scope.item = $items.current();
+
+}])
+ 
