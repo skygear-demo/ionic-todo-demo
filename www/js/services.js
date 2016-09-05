@@ -44,4 +44,11 @@ angular.module('app.services', [])
             console.error(err);
         });
     };
+    this._current = 0;
+    this.markCurrent = function (index) {
+        that._current = index;
+    };
+    this.current = function () {
+        return that.items[that._current];
+    };
 }]);

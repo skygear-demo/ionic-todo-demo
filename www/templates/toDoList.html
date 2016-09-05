@@ -6,7 +6,7 @@
             <a ui-sref="addItem" id="toDoList-button11" class="button button-positive  button-block">Add</a>
         </div>
         <ion-list id="toDoList-list4">
-            <ion-item ng-repeat="item in items" ng-attr-id="{{'toDoList-list-item' + $index}}" ui-sref="itemDetail">
+            <ion-item ng-repeat="item in items" ng-attr-id="{{'toDoList-list-item' + $index}}" ng-click="detail($index)">
                 <span ng-bind="item.title"></span>
                 <span ng-bind="item.content" class="item-note"></span>
             </ion-item>

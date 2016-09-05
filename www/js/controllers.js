@@ -63,6 +63,10 @@ function ($scope, $stateParams, $skygear, $state, $items, $timeout) {
             console.error(err);
         });
     }
+    $scope.detail = function (index) {
+        $items.markCurrent(index);
+        $state.go('itemDetail');
+    }
 
     $items.onUpdate(function (items) {
         $timeout(function () {
@@ -99,11 +103,10 @@ function ($scope, $stateParams) {
 
 }])
    
-.controller('itemDetailCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-// You can include any angular dependencies as parameters for this function
-// TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+.controller('itemDetailCtrl', ['$scope', '$state', '$items',
+function ($scope, $state, $items) {
 
+    $scope.item = $items.current();
 
 }])
  
