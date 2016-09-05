@@ -1,9 +1,6 @@
 angular.module('app.controllers', [])
   
 .controller('logInCtrl', ['$scope', '$stateParams', '$skygear', '$ionicPopup', '$state',
-// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-// You can include any angular dependencies as parameters for this function
-// TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams, $skygear, $ionicPopup, $state) {
 
     $scope.user = {};
@@ -28,11 +25,28 @@ function ($scope, $stateParams, $skygear, $ionicPopup, $state) {
 
 }])
    
-.controller('signUpCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-// You can include any angular dependencies as parameters for this function
-// TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+.controller('signUpCtrl', ['$scope', '$stateParams', '$skygear', '$ionicPopup', '$state',
+function ($scope, $stateParams, $skygear, $ionicPopup, $state) {
 
+    $scope.user = {};
+    $scope.signup = function () {
+        if ($scope.user.username && $scope.user.password) {
+            $skygear.signupWithUsername($scope.user.username, $scope.user.password).then(function () {
+                $state.go('toDoList');
+            }, function (err) {
+                console.error(err);
+                $ionicPopup.alert({
+                    title: 'ERROR ' + err.error.code,
+                    template: err.error.message
+                });
+            });
+        } else {
+            $ionicPopup.alert({
+                title: 'ERROR',
+                template: 'Please fill in all the fields'
+            });            
+        }
+    };
 
 }])
    
