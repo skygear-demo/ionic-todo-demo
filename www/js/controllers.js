@@ -98,11 +98,14 @@ function ($scope, $stateParams, $items, $state, $ionicPopup) {
 
 }])
    
-.controller('editItemCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-// You can include any angular dependencies as parameters for this function
-// TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+.controller('editItemCtrl', ['$scope', '$state', '$items',
+function ($scope, $state, $items) {
 
+    $scope.item = $items.current();
+    $scope.done = function () {
+        $items.sync();
+        $state.go('itemDetail');
+    };
 
 }])
    

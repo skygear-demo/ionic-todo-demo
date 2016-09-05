@@ -37,19 +37,19 @@ angular.module('app.services', [])
             console.error(err);
         });
     };
-    this.sync = function (index) {
-        $skygear.publicDB.save(that.items[index]).then(function () {
-            that._onUpdate(that.items);
-        }, function (err) {
-            console.error(err);
-        });
-    };
     this._current = 0;
     this.markCurrent = function (index) {
         that._current = index;
     };
     this.current = function () {
         return that.items[that._current];
+    };
+    this.sync = function () {
+        $skygear.publicDB.save(that.current()).then(function () {
+            that._onUpdate(that.items);
+        }, function (err) {
+            console.error(err);
+        });
     };
     this.delete = function (index) {
         $skygear.publicDB.delete(that.items[index]).then(function () {
@@ -58,5 +58,5 @@ angular.module('app.services', [])
         }, function (err) {
             console.error(err);
         })
-    }
+    };
 }]);

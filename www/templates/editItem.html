@@ -3,14 +3,14 @@
         <form id="editItem-form4" class="list">
             <label class="item item-input item-stacked-label" id="editItem-input7">
                 <span class="input-label">Title</span>
-                <input type="text" placeholder="What in your mind?">
+                <input ng-model="item.title" type="text" placeholder="What in your mind?">
             </label>
             <div class="spacer" style="width: 300px; height: 19px;"></div>
             <label class="item item-input item-stacked-label" id="editItem-input8">
                 <span class="input-label">Content</span>
-                <input type="text" placeholder="What's the plan?">
+                <input ng-model="item.content" type="text" placeholder="What's the plan?">
             </label>
         </form>
-        <a ui-sref="itemDetail" id="editItem-button14" class="button button-positive  button-block">Done</a>
+        <a ng-click="done()" id="editItem-button14" class="button button-positive  button-block">Done</a>
     </ion-content>
 </ion-view>
