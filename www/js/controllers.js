@@ -62,11 +62,14 @@ function ($scope, $stateParams, $skygear, $state, $items, $timeout) {
         }, function (err) {
             console.error(err);
         });
-    }
+    };
     $scope.detail = function (index) {
         $items.markCurrent(index);
         $state.go('itemDetail');
-    }
+    };
+    $scope.delete = function (index) {
+        $items.delete(index);
+    };
 
     $items.onUpdate(function (items) {
         $timeout(function () {

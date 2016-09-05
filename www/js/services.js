@@ -38,7 +38,7 @@ angular.module('app.services', [])
         });
     };
     this.sync = function (index) {
-        return $skygear.publicDB.save(that.items[index]).then(function () {
+        $skygear.publicDB.save(that.items[index]).then(function () {
             that._onUpdate(that.items);
         }, function (err) {
             console.error(err);
@@ -51,4 +51,12 @@ angular.module('app.services', [])
     this.current = function () {
         return that.items[that._current];
     };
+    this.delete = function (index) {
+        $skygear.publicDB.delete(that.items[index]).then(function () {
+            that.items.splice(index, 1);
+            that._onUpdate(that.items);
+        }, function (err) {
+            console.error(err);
+        })
+    }
 }]);
