@@ -1,12 +1,13 @@
 angular.module('app.controllers', [])
   
-.controller('logInCtrl', ['$scope', '$stateParams', '$skygear', '$ionicPopup', '$state',
-function ($scope, $stateParams, $skygear, $ionicPopup, $state) {
+.controller('logInCtrl', ['$scope', '$stateParams', '$skygear', '$ionicPopup', '$state', '$items', 
+function ($scope, $stateParams, $skygear, $ionicPopup, $state, $items) {
 
     $scope.user = {};
     $scope.login = function () {
         if ($scope.user.username && $scope.user.password) {
             $skygear.loginWithUsername($scope.user.username, $scope.user.password).then(function () {
+                $items.update();
                 $state.go('toDoList');
             }, function (err) {
                 console.error(err);
@@ -50,19 +51,43 @@ function ($scope, $stateParams, $skygear, $ionicPopup, $state) {
 
 }])
    
-.controller('toDoListCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-// You can include any angular dependencies as parameters for this function
-// TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+.controller('toDoListCtrl', ['$scope', '$stateParams', '$skygear', '$state', '$items', '$timeout',
+function ($scope, $stateParams, $skygear, $state, $items, $timeout) {
 
+    $scope.username = $skygear.currentUser.username;
+    $scope.items = $items.items;
+    $scope.logout = function () {
+        $skygear.logout().then(function () {
+            $state.go('logIn');
+        }, function (err) {
+            console.error(err);
+        });
+    }
+
+    $items.onUpdate(function (items) {
+        $timeout(function () {
+            $scope.items = items;
+        });
+    });
 
 }])
    
-.controller('addItemCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-// You can include any angular dependencies as parameters for this function
-// TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+.controller('addItemCtrl', ['$scope', '$stateParams', '$items', '$state', '$ionicPopup',
+function ($scope, $stateParams, $items, $state, $ionicPopup) {
 
+    $scope.item = {};
+    $scope.add = function () {
+        if ($scope.item.title) {
+            $items.create($scope.item);
+            $state.go('toDoList');
+        } else {
+            $ionicPopup.alert({
+                'title': 'ERROR',
+                'template': 'Please at least provide a title'
+            })
+        }
+        $state.go('toDoList');
+    }
 
 }])
    
