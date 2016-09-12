@@ -17,7 +17,7 @@ angular.module('app.services', [])
             var query = new $skygear.Query(Item);
             query.equalTo('_owner_id', $skygear.currentUser.id)
             query.addDescending('_created_at');
-            return $skygear.publicDB.query(query).then(function (records) {
+            $skygear.publicDB.query(query).then(function (records) {
                 that.items = records;
                 that._onUpdate(records);
             }, function (err) {

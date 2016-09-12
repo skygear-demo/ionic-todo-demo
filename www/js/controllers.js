@@ -78,7 +78,25 @@ function ($scope, $stateParams, $skygear, $state, $items, $timeout) {
     });
 
 }])
-   
+
+.controller('itemDetailCtrl', ['$scope', '$state', '$items',
+function ($scope, $state, $items) {
+
+    $scope.item = $items.current();
+
+}])   
+
+.controller('editItemCtrl', ['$scope', '$state', '$items',
+function ($scope, $state, $items) {
+
+    $scope.item = $items.current();
+    $scope.done = function () {
+        $items.sync();
+        $state.go('itemDetail');
+    };
+
+}])
+
 .controller('addItemCtrl', ['$scope', '$stateParams', '$items', '$state', '$ionicPopup',
 function ($scope, $stateParams, $items, $state, $ionicPopup) {
 
@@ -93,26 +111,6 @@ function ($scope, $stateParams, $items, $state, $ionicPopup) {
                 'template': 'Please at least provide a title'
             })
         }
-        $state.go('toDoList');
     }
 
-}])
-   
-.controller('editItemCtrl', ['$scope', '$state', '$items',
-function ($scope, $state, $items) {
-
-    $scope.item = $items.current();
-    $scope.done = function () {
-        $items.sync();
-        $state.go('itemDetail');
-    };
-
-}])
-   
-.controller('itemDetailCtrl', ['$scope', '$state', '$items',
-function ($scope, $state, $items) {
-
-    $scope.item = $items.current();
-
-}])
- 
+}]);

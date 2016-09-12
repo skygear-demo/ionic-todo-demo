@@ -9,8 +9,8 @@ the usage of Ionic Framework and Skygear JS SDK.
 ## To deploy the project locally
 
 - Install Node.js and NPM [here](https://nodejs.org/)
-- Install Ionic framework: `npm install -g ionic`
-- Install dependency: `npm install`
+- Install Ionic framework: `npm install -g cordova ionic`
+- Install project dependency: `npm install`
 - Now you are ready to launch the App
     + To launch in iOS emulator: `ionic emulate ios`
     + To launch in web browser: `ionic serve`
