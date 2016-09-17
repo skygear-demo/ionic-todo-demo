@@ -31,7 +31,8 @@ angular.module('app.services', [])
     }
     this.create = function (item) {
         $skygear.publicDB.save(new Item(item)).then(function (record) {
-            that.items.push(record);
+            $skygear.pubsub.publish($skygear.currentUser.id, {});
+            that.items.unshift(record);
             that._onUpdate(that.items);
         }, function (err) {
             console.error(err);
@@ -46,6 +47,7 @@ angular.module('app.services', [])
     };
     this.sync = function () {
         $skygear.publicDB.save(that.current()).then(function () {
+            $skygear.pubsub.publish($skygear.currentUser.id, {});
             that._onUpdate(that.items);
         }, function (err) {
             console.error(err);
@@ -53,10 +55,16 @@ angular.module('app.services', [])
     };
     this.delete = function (index) {
         $skygear.publicDB.delete(that.items[index]).then(function () {
+            $skygear.pubsub.publish($skygear.currentUser.id, {});
             that.items.splice(index, 1);
             that._onUpdate(that.items);
         }, function (err) {
             console.error(err);
         })
     };
+
+    $skygear.onUserChanged(function (user) {
+        if (user) $skygear.on(user.id, function () { that.update(); });
+    });
+
 }]);
